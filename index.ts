@@ -1,4 +1,5 @@
 import { Service } from 'hub-service'
+import { access } from './access'
 
 type ChatMessage = {
   role: string
@@ -116,7 +117,7 @@ new Service({
       })
       return await response.json()
     },
-    { limit: 4 },
+    { ...access['llm/local'], limit: 4 },
   )
   .stream(
     'llm/local',
@@ -125,10 +126,10 @@ new Service({
         yield chunk
       }
     },
-    { limit: 4 },
+    { ...access['llm/local'], limit: 4 },
   )
   .post('llm/list', async () => {
     const response = await requestLmStudio('models', { method: 'GET' })
     return await response.json()
-  })
+  }, access['llm/list'])
   .start()
